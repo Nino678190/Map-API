@@ -45,7 +45,7 @@ app.post('/api/registration', async (req, res) => {
         console.log(checkResult);
         const hashedPassword = await hash(password);
         console.log(hashedPassword);
-        await connection.query("INSERT INTO User VALUES Name, Password (?,?)", [username, hashedPassword]);
+        await connection.query("INSERT INTO User (Name, Password) VALUES (?, ?)", [username, hashedPassword]);
         res.status(201).send("Created");
     } catch (error) {
         res.status(500).send(`Server error: ${error.message}`);
@@ -102,7 +102,7 @@ app.post('/api/login', async (req, res) => {
 
     try {
         connection = await pool.getConnection();
-        const [users] = await connection.query("SELECT username, password FROM User WHERE username = ?", [username]);
+        const [users] = await connection.query("SELECT Name, password FROM User WHERE Name = ?", [username]);
 
         if (users.length > 0) {
             const user = users[0];
