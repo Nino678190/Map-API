@@ -70,6 +70,11 @@ h3{
 <p>Travelpaca ist ein kostenloser Webseite, wo man  tolle Erfahrungen sammeln kann! Finde tolle Restaurants, Kafés und Sehenswürdigkeiten, gucke dir andere Feedbacks an,und gib selber zu deiner Liblingsrestaurant Feedback! alles auf Travelpaca. Viel Spaß! </p>
 </div><div class="menü">
 <div class="seite">
+<div id="details">
+    <h2>
+        hhhhhhhhh
+    </h2>
+</div>
 <h2>menü</h2>
 <h3>homepage~</h3>
    <button id="button2">my account</button> 
@@ -83,7 +88,11 @@ h3{
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
-var test_point = L.marker([51.0508900,13.7383200]).addTo(map).bindPopup('<b>kulturpalast</b>');
+function add_marker(x,y,text){
+    L.marker([x,y]).addTo(map).bindPopup('<b>'+text+'</b>');}
+test_marker = add_marker(51.0508900,13.7383200,'')
+
+
     </script>
    
 </body>
