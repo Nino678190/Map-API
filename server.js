@@ -1,12 +1,17 @@
-const express = require('express');
-var mysql = require('mysql');
-let connection = mysql.createConnection({
-    host     : 'http://localhost:3306',
+import express from 'express';
+import mysql from 'mysql2/promise';
+import bcrypt from 'bcrypt';
+
+const pool = mysql.createPool({
+    host: 'localhost',  // Korrigiert von 'http://localhost:3306'
+    port: 3306,
     user: 'your_username',
-    password: 'your_root_password'
+    password: 'your_root_password',
+    database: 'your_database' // Datenbank hinzugefügt
 });
+
 const app = express();
-const bcrypt = require('bcrypt');
+
 app.use(express.json())
 const saltRounds = 10
 function hash(password) {
@@ -16,139 +21,141 @@ function hash(password) {
 
 //User : ADD
 app.post('/api/registration', async (req, res) => {
-    let { username, password } = req.body
+    let { username, password } = req.body;
+    let connection;
+
     try {
-
-        const res = await connection.query("INSERT INTO User value (?,?)", [username, hash(password)]);
-
+        connection = await pool.getConnection();
+        const hashedPassword = await hash(password);
+        await connection.query("INSERT INTO User VALUES (?,?)", [username, hashedPassword]);
+        res.status(201).send("Created");
+    } catch (error) {
+        res.status(500).send(`Server error: ${error.message}`);
+    } finally {
+        if (connection) connection.release(); // Release to pool
     }
-    catch (error) {
-        res.status(500).send("server error ", error)
-        return;
-    }
-
-    finally {
-        if (connection) connection.release(); //release to pool
-    }
-    res.status(201).send("Created")
-})
-
+});
 //Interaction : ADD
 app.post('/api/addinteraction', async (req, res) => {
-    let { user,likeordislike,bewertungid } = req.body
-    
+    let { user, likeordislike, bewertungid } = req.body;
+    let connection;
+
     try {
-        const check = await connection.query("SELECT user FROM interactions WHERE bewertungid = (?)",[bewertungid]);
-        if (check.rawCount >= 1){
-            return res.status(400).send("This User already left a like/dislike here")
+        connection = await pool.getConnection();
+
+        const [checkResult] = await connection.query("SELECT user FROM interactions WHERE bewertungid = ?", [bewertungid]);
+        if (checkResult.length >= 1) {
+            return res.status(400).send("This User already left a like/dislike here");
         }
-        const res = await conn.query("INSERT INTO Interactions value (?,?,?)", [user,likeordislike,bewertungid]);
 
+        await connection.query("INSERT INTO Interactions VALUES (?,?,?)", [user, likeordislike, bewertungid]);
+        res.status(201).send("Created");
+    } catch (error) {
+        res.status(500).send(`Server error: ${error.message}`);
+    } finally {
+        if (connection) connection.release();
     }
-    catch (error) {
-        res.status(500).send("server error ", error)
-        return;
-    }
-
-    finally {
-        if (conn) conn.release(); //release to pool
-    }
-    res.status(201).send("Created")
-})
+});
 
 //Seight : ADD
 app.post('/api/addseight', async (req, res) => {
-    let { name , xcoordinate , ycoordinate , type , price, description , opening_times} = req.body;
-    
+    let { name, xcoordinate, ycoordinate, type, price, description, opening_times } = req.body;
+    let connection;
+
     try {
-        conn = await pool.getConnection();
-
-        const res = await conn.query("INSERT INTO seights value (?,?,?,?,?,?,?)", [name, xcoordinate, ycoordinate, type, price, description, opening_times]);
-
+        connection = await pool.getConnection();
+        await connection.query("INSERT INTO seights VALUES (?,?,?,?,?,?,?)",
+            [name, xcoordinate, ycoordinate, type, price, description, opening_times]);
+        res.status(201).send("Created");
+    } catch (error) {
+        res.status(500).send(`Server error: ${error.message}`);
+    } finally {
+        if (connection) connection.release();
     }
-    catch (error) {
-        res.status(500).send("server error ", error)
-        return;
-    }
-
-    finally {
-        if (connection) connection.release(); //release to pool
-    }
-    res.status(201).send("Created")
-})
+});
 
 
 
 //User: Login (with compare)
 app.post('/api/login', async (req, res) => {
-    let { username, password } = req.body
+    let { username, password } = req.body;
+    let connection;
+
     try {
-        const db_getdata = await connection.query("SELECT username , password FROM User where username = (?)", [username]);
-        if (db_getdata){
-            const check = bcrypt.compare(password, db_getdata.password);
+        connection = await pool.getConnection();
+        const [users] = await connection.query("SELECT username, password FROM User WHERE username = ?", [username]);
+
+        if (users.length > 0) {
+            const user = users[0];
+            const check = await bcrypt.compare(password, user.password);
+
             if (!check) {
                 return res.status(404).send("Nutzer nicht gefunden");
             }
-        }    
+            res.status(200).send("Login erfolgreich");
+        } else {
+            res.status(404).send("Nutzer nicht gefunden");
+        }
     } catch (error) {
-        res.status(500).send("server error ", error)
-        return;
+        res.status(500).send(`Server error: ${error.message}`);
     } finally {
-        if (connection) connection.release(); //release to pool
+        if (connection) connection.release();
     }
-    res.status(201).send("Created")
-})
+});
 
 //Seight: GET
-app.post('/api/getsight/:id', async (req, res) => {
-    let { id } = req.params
-    
+app.get('/api/getsight/:id', async (req, res) => {
+    let { id } = req.params;
+    let connection;
+
     try {
-        const db_getdata = await connection.query("SELECT * FROM User where id = (?)", [id]);
-        res.status(200).send(db_getdata)
+        connection = await pool.getConnection();
+        const [sights] = await connection.query("SELECT * FROM seights WHERE id = ?", [id]);
+        res.status(200).json(sights);
     } catch (error) {
-        res.status(500).send("server error ", error)
-        return;
+        res.status(500).send(`Server error: ${error.message}`);
     } finally {
-        if (connection) connection.release(); //release to pool
+        if (connection) connection.release();
     }
-    
-})
+});
 
 //Interaction: GET total
-app.post('/api/allinteraction/:id',async (req, res) => {
-    let {id} = req.params
-    
+app.get('/api/allinteraction/:id', async (req, res) => {
+    let { id } = req.params;
+    let connection;
+
     try {
-        const db_getdata = await connection.query("SELECT * FROM User where id = (?) and type = true", [id]);
-        anzahl_likes = db_getdata.rowCount
-        const db_getdata_negative = await connection.query("SELECT * FROM User where id = (?) and type = false", [id]);
-        anzahl_dislikes = db_getdata_negative.rowCount
-        res.status(200).send(anzahl_likes , anzahl_dislikes)
+        connection = await pool.getConnection();
+        const [likesResult] = await connection.query("SELECT COUNT(*) as count FROM interactions WHERE bewertungid = ? AND type = true", [id]);
+        const anzahl_likes = likesResult[0].count;
+
+        const [dislikesResult] = await connection.query("SELECT COUNT(*) as count FROM interactions WHERE bewertungid = ? AND type = false", [id]);
+        const anzahl_dislikes = dislikesResult[0].count;
+
+        res.status(200).json({ likes: anzahl_likes, dislikes: anzahl_dislikes });
     } catch (error) {
-        res.status(500).send("server error ", error)
-        return;
+        res.status(500).send(`Server error: ${error.message}`);
     } finally {
-        if (connection) connection.release(); //release to pool
+        if (connection) connection.release();
     }
-})
+});
 
 //
-app.post('/api/addfeedback/:seightid',async (req, res) => {
-    let {seightid} = req.params
-    let {user,feedback} = req.body
-    
-    try {
-        const res = await connection.query("INSERT INTO Feedback value (?,?,?)", [seightid,user,feedback]);
-        res.status(200).send("Feedback added")
-    } catch (error) {
-        res.status(500).send("server error ", error)
-        return;
-    } finally {
-        if (connection) connection.release(); //release to pool
-    }
-})
+app.post('/api/addfeedback/:seightid', async (req, res) => {
+    let { seightid } = req.params;
+    let { user, feedback } = req.body;
+    let connection;
 
+    try {
+        connection = await pool.getConnection();
+        await connection.query("INSERT INTO Feedback VALUES (?,?,?)", [seightid, user, feedback]);
+        res.status(200).send("Feedback added");
+    } catch (error) {
+        res.status(500).send(`Server error: ${error.message}`);
+    } finally {
+        if (connection) connection.release();
+    }
+});
 
 app.listen(3000, () => {
     console.log("Server opened on port 3000");
