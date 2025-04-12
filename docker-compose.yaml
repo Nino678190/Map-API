@@ -1,18 +1,4 @@
 services:
-  app:
-    # Verwendet das eigene Node.js-Image
-    image: my-node-app
-    # Bindet den Port 3000 des Containers auf den Port 13000 des Hosts
-    ports:
-      - "14000:3000"
-    # Bindet das aktuelle Verzeichnis auf /usr/src/app im Container
-    volumes:
-      - .:/usr/src/app
-    # Definiert die Umgebungsvariablen
-    environment:
-      - NODE_ENV=development
-    # Definiert, dass der Container immer neu gestartet wird
-    restart: always
   db:
     image: mysql:latest
     restart: always
@@ -36,3 +22,19 @@ services:
       MYSQL_ROOT_PASSWORD: your_root_password
     ports:
       - "8080:80"
+  app:
+    # Verwendet das eigene Node.js-Image
+    image: my-node-app
+    # Bindet den Port 3000 des Containers auf den Port 13000 des Hosts
+    ports:
+      - "14000:3000"
+    # Bindet das aktuelle Verzeichnis auf /usr/src/app im Container
+    volumes:
+      - .:/usr/src/app
+    # Definiert die Umgebungsvariablen
+    environment:
+      - NODE_ENV=development
+    # Definiert, dass der Container immer neu gestartet wird
+    restart: always
+    depends_on:
+      - db

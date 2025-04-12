@@ -1,13 +1,19 @@
-import express from 'express';
-import mysql from 'mysql2/promise';
-import bcrypt from 'bcrypt';
+const express = require("express");
+const mysql = require('mysql2/promise'); // mysql2/promise für Promise-Support
+const cors = require('cors');
+const bcrypt = require('bcrypt'); // Korrektur: require statt Zuweisung
+const sleep = require('atomic-sleep')
+
+console.time('sleep')
+setTimeout(() => { console.timeEnd('sleep') }, 100)
+sleep(1000)
+
 
 const pool = mysql.createPool({
-    host: 'localhost',  // Korrigiert von 'http://localhost:3306'
-    port: 3306,
+    host: 'db',
     user: 'your_username',
-    password: 'your_root_password',
-    database: 'your_database' // Datenbank hinzugefügt
+    password: 'your_password',
+    database: 'your_database_name' // Datenbank hinzugefügt
 });
 
 const app = express();
@@ -18,6 +24,15 @@ function hash(password) {
     return bcrypt.hash(password, saltRounds);
 }
 
+//Connection to DB
+pool.getConnection((err, connection) => {
+    if (err) {
+        console.error('Error connecting to the database:', err);
+        return;
+    }
+    console.log('Connected to the database');
+    connection.release(); // Release the connection back to the pool
+});
 
 //User : ADD
 app.post('/api/registration', async (req, res) => {
@@ -26,7 +41,10 @@ app.post('/api/registration', async (req, res) => {
 
     try {
         connection = await pool.getConnection();
+        const [checkResult] = await connection.query("SELECT Name FROM User WHERE Name = ?", [username]);
+        console.log(checkResult);
         const hashedPassword = await hash(password);
+        console.log(hashedPassword);
         await connection.query("INSERT INTO User VALUES (?,?)", [username, hashedPassword]);
         res.status(201).send("Created");
     } catch (error) {
@@ -35,6 +53,7 @@ app.post('/api/registration', async (req, res) => {
         if (connection) connection.release(); // Release to pool
     }
 });
+
 //Interaction : ADD
 app.post('/api/addinteraction', async (req, res) => {
     let { user, likeordislike, bewertungid } = req.body;
