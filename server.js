@@ -45,7 +45,7 @@ app.post('/api/registration', async (req, res) => {
         console.log(checkResult);
         const hashedPassword = await hash(password);
         console.log(hashedPassword);
-        await connection.query("INSERT INTO User VALUES (?,?)", [username, hashedPassword]);
+        await connection.query("INSERT INTO User VALUES Name, Password (?,?)", [username, hashedPassword]);
         res.status(201).send("Created");
     } catch (error) {
         res.status(500).send(`Server error: ${error.message}`);
