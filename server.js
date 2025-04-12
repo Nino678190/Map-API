@@ -1,9 +1,9 @@
 const express = require('express');
 var mysql = require('mysql');
 let connection = mysql.createConnection({
-    host     : 'example.org',
-    user     : 'bob',
-    password : 'secret'
+    host     : 'http://localhost:3306',
+    user: 'your_username',
+    password: 'your_root_password'
 });
 const app = express();
 const bcrypt = require('bcrypt');
