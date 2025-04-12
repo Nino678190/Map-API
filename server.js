@@ -1,6 +1,6 @@
 const express = require('express');
 const mariadb = require('mariadb');
-const pool = mariadb.createPool({ host: process.env.DB_HOST, user: process.env.DB_USER, connectionLimit: 5 });
+const pool = mariadb.createPool({ host: db, user: your_username, connectionLimit: 5 });
 const app = express();
 const bcrypt = require('bcrypt');
 app.use(express.json())
@@ -134,10 +134,24 @@ app.post('/api/allinteraction/:id',async (req, res) => {
     } finally {
         if (conn) conn.release(); //release to pool
     }
+})
 
-}
-
-)
+//
+app.post('/api/addfeedback/:seightid',async (req, res) => {
+    let {seightid} = req.params
+    let {user,feedback} = req.body
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const res = await conn.query("INSERT INTO Feedback value (?,?,?)", [seightid,user,feedback]);
+        res.status(200).send("Feedback added")
+    } catch (error) {
+        res.status(500).send("server error ", error)
+        return;
+    } finally {
+        if (conn) conn.release(); //release to pool
+    }
+})
 
 
 app.listen(3000, () => {
