@@ -35,6 +35,7 @@ pool.getConnection((err, connection) => {
 });
 
 //User : ADD
+//* Funktioniert
 app.post('/api/registration', async (req, res) => {
     let { username, password } = req.body;
     let connection;
@@ -55,19 +56,20 @@ app.post('/api/registration', async (req, res) => {
 });
 
 //Interaction : ADD
+//* Funktioniert
 app.post('/api/addinteraction', async (req, res) => {
     let { user, likeordislike, bewertungid } = req.body;
     let connection;
-
+    console.log(user, likeordislike, bewertungid);
     try {
         connection = await pool.getConnection();
 
-        const [checkResult] = await connection.query("SELECT user FROM interactions WHERE bewertungid = ?", [bewertungid]);
+        const [checkResult] = await connection.query("SELECT UserID FROM Interaction WHERE BewertungsID = ?", [bewertungid]);
         if (checkResult.length >= 1) {
             return res.status(400).send("This User already left a like/dislike here");
         }
 
-        await connection.query("INSERT INTO Interactions VALUES (?,?,?)", [user, likeordislike, bewertungid]);
+        await connection.query("INSERT INTO Interaction (UserID, Typ, BewertungsID) VALUES (?,?,?)", [user, likeordislike, bewertungid]);
         res.status(201).send("Created");
     } catch (error) {
         res.status(500).send(`Server error: ${error.message}`);
@@ -76,15 +78,16 @@ app.post('/api/addinteraction', async (req, res) => {
     }
 });
 
-//Seight : ADD
-app.post('/api/addseight', async (req, res) => {
-    let { name, xcoordinate, ycoordinate, type, price, description, opening_times } = req.body;
+//ort : ADD
+//* Funktioniert
+app.post('/api/addort', async (req, res) => {
+    let { name, Breitengrad, Längengrad, Typ, Preise, Öffnungszeiten, Beschreibung } = req.body;
     let connection;
 
     try {
         connection = await pool.getConnection();
-        await connection.query("INSERT INTO seights VALUES (?,?,?,?,?,?,?)",
-            [name, xcoordinate, ycoordinate, type, price, description, opening_times]);
+        await connection.query("INSERT INTO Ort (name, Breitengrad, Längengrad, Typ, Preise, Öffnungszeiten, Beschreibung) VALUES (?,?,?,?,?,?,?)",
+            [name, Breitengrad, Längengrad, Typ, Preise, Öffnungszeiten, Beschreibung]);
         res.status(201).send("Created");
     } catch (error) {
         res.status(500).send(`Server error: ${error.message}`);
@@ -96,6 +99,7 @@ app.post('/api/addseight', async (req, res) => {
 
 
 //User: Login (with compare)
+//* Funktioniert
 app.post('/api/login', async (req, res) => {
     let { username, password } = req.body;
     let connection;
@@ -122,14 +126,14 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-//Seight: GET
+//ort: GET
+//* Funktioniert
 app.get('/api/getsight/:id', async (req, res) => {
     let { id } = req.params;
     let connection;
-
     try {
         connection = await pool.getConnection();
-        const [sights] = await connection.query("SELECT * FROM seights WHERE id = ?", [id]);
+        const [sights] = await connection.query("SELECT * FROM Ort WHERE OrtID = ?", [id]);
         res.status(200).json(sights);
     } catch (error) {
         res.status(500).send(`Server error: ${error.message}`);
@@ -139,16 +143,17 @@ app.get('/api/getsight/:id', async (req, res) => {
 });
 
 //Interaction: GET total
+//TODO: Fixe die SQL Abfrage
 app.get('/api/allinteraction/:id', async (req, res) => {
     let { id } = req.params;
     let connection;
 
     try {
         connection = await pool.getConnection();
-        const [likesResult] = await connection.query("SELECT COUNT(*) as count FROM interactions WHERE bewertungid = ? AND type = true", [id]);
+        const [likesResult] = await connection.query("SELECT COUNT(*) as count FROM Interaction WHERE BewertungsID = ? AND Typ = 1", [id]);
         const anzahl_likes = likesResult[0].count;
 
-        const [dislikesResult] = await connection.query("SELECT COUNT(*) as count FROM interactions WHERE bewertungid = ? AND type = false", [id]);
+        const [dislikesResult] = await connection.query("SELECT COUNT(*) as count FROM Interaction WHERE BewertungsID = ? AND Typ = 2", [id]);
         const anzahl_dislikes = dislikesResult[0].count;
 
         res.status(200).json({ likes: anzahl_likes, dislikes: anzahl_dislikes });
@@ -159,15 +164,15 @@ app.get('/api/allinteraction/:id', async (req, res) => {
     }
 });
 
-//
-app.post('/api/addfeedback/:seightid', async (req, res) => {
-    let { seightid } = req.params;
+//* Funktioniert
+app.post('/api/addfeedback/:ortid', async (req, res) => {
+    let { ortid } = req.params;
     let { user, feedback } = req.body;
     let connection;
 
     try {
         connection = await pool.getConnection();
-        await connection.query("INSERT INTO Feedback VALUES (?,?,?)", [seightid, user, feedback]);
+        await connection.query("INSERT INTO Bewertungen (OrtID, UserID, Beschreibung) VALUES (?,?,?)", [ortid, user, feedback]);
         res.status(200).send("Feedback added");
     } catch (error) {
         res.status(500).send(`Server error: ${error.message}`);
