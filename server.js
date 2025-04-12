@@ -9,14 +9,8 @@ function hash(password) {
     return bcrypt.hash(password, saltRounds);
 }
 
-//Bcrypt importieren
-//Hash Funktion zum laufen kriegen
-//Registierungesendpoint mit Post methode
-//Username und Passwort akzeptieren
-//Passwort hashen
-//Username + Passwort -> DB
-//201 Code mit Created
 
+//User : ADD
 app.post('/api/registration', async (req, res) => {
     let { username, password } = req.body
     let conn;
@@ -37,13 +31,38 @@ app.post('/api/registration', async (req, res) => {
     res.status(201).send("Created")
 })
 
+//Interaction : ADD
+app.post('/api/addinteraction', async (req, res) => {
+    let { user,likeordislike,bewertungid } = req.body
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const check = await conn.query("SELECT user FROM interactions WHERE bewertungid = (?)",[bewertungid]);
+        if (check.rawCount >= 1){
+            return res.status(400).send("This User already left a like/dislike here")
+        }
+        const res = await conn.query("INSERT INTO Interactions value (?,?,?)", [user,likeordislike,bewertungid]);
+
+    }
+    catch (error) {
+        res.status(500).send("server error ", error)
+        return;
+    }
+
+    finally {
+        if (conn) conn.release(); //release to pool
+    }
+    res.status(201).send("Created")
+})
+
+//Seight : ADD
 app.post('/api/addseight', async (req, res) => {
     let { name , xcoordinate , ycoordinate , type , price, description , opening_times} = req.body;
     let conn;
     try {
         conn = await pool.getConnection();
 
-        const res = await conn.query("INSERT INTO User value (?,?,?,?,?,?,?)", [name, xcoordinate, ycoordinate, type, price, description, opening_times]);
+        const res = await conn.query("INSERT INTO seights value (?,?,?,?,?,?,?)", [name, xcoordinate, ycoordinate, type, price, description, opening_times]);
 
     }
     catch (error) {
@@ -58,8 +77,8 @@ app.post('/api/addseight', async (req, res) => {
 })
 
 
-///api/getsight/:id
 
+//User: Login (with compare)
 app.post('/api/login', async (req, res) => {
     let { username, password } = req.body
     let conn;
