@@ -100,6 +100,7 @@ app.post('/api/login', async (req, res) => {
     res.status(201).send("Created")
 })
 
+//Seight: GET
 app.post('/api/getsight/:id', async (req, res) => {
     let { id } = req.params
     let conn;
@@ -116,6 +117,7 @@ app.post('/api/getsight/:id', async (req, res) => {
     
 })
 
+//Interaction: GET total
 app.post('/api/allinteraction/:id',async (req, res) => {
     let {id} = req.params
     let conn;
