@@ -181,6 +181,34 @@ app.post('/api/addfeedback/:ortid', async (req, res) => {
     }
 });
 
+app.get('/api/location/:latitude/:longitude', async (req, res) => {
+    let {latitude, longitude} = req.params;
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const [data] = await connection.query(
+            `SELECT *, 
+            (6371 * ACOS(
+                COS(RADIANS(?)) * 
+                COS(RADIANS(Breitengrad)) * 
+                COS(RADIANS(Längengrad) - RADIANS(?)) + 
+                SIN(RADIANS(?)) * 
+                SIN(RADIANS(Breitengrad))
+            )) AS distance 
+            FROM Ort 
+            HAVING distance <= 10 
+            ORDER BY distance`,
+            [latitude, longitude, latitude]
+        );
+        res.status(200).json(data);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Server error");
+    } finally {
+        if (connection) connection.release();
+    }
+})
+
 app.listen(3000, () => {
     console.log("Server opened on port 3000");
 })
