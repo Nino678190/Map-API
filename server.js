@@ -1,6 +1,10 @@
 const express = require('express');
-const mariadb = require('mariadb');
-const pool = mariadb.createPool({ host: db, user: your_username, connectionLimit: 5 });
+var mysql = require('mysql');
+let connection = mysql.createConnection({
+    host     : 'example.org',
+    user     : 'bob',
+    password : 'secret'
+});
 const app = express();
 const bcrypt = require('bcrypt');
 app.use(express.json())
@@ -13,11 +17,9 @@ function hash(password) {
 //User : ADD
 app.post('/api/registration', async (req, res) => {
     let { username, password } = req.body
-    let conn;
     try {
-        conn = await pool.getConnection();
 
-        const res = await conn.query("INSERT INTO User value (?,?)", [username, hash(password)]);
+        const res = await connection.query("INSERT INTO User value (?,?)", [username, hash(password)]);
 
     }
     catch (error) {
@@ -26,7 +28,7 @@ app.post('/api/registration', async (req, res) => {
     }
 
     finally {
-        if (conn) conn.release(); //release to pool
+        if (connection) connection.release(); //release to pool
     }
     res.status(201).send("Created")
 })
@@ -34,10 +36,9 @@ app.post('/api/registration', async (req, res) => {
 //Interaction : ADD
 app.post('/api/addinteraction', async (req, res) => {
     let { user,likeordislike,bewertungid } = req.body
-    let conn;
+    
     try {
-        conn = await pool.getConnection();
-        const check = await conn.query("SELECT user FROM interactions WHERE bewertungid = (?)",[bewertungid]);
+        const check = await connection.query("SELECT user FROM interactions WHERE bewertungid = (?)",[bewertungid]);
         if (check.rawCount >= 1){
             return res.status(400).send("This User already left a like/dislike here")
         }
@@ -58,7 +59,7 @@ app.post('/api/addinteraction', async (req, res) => {
 //Seight : ADD
 app.post('/api/addseight', async (req, res) => {
     let { name , xcoordinate , ycoordinate , type , price, description , opening_times} = req.body;
-    let conn;
+    
     try {
         conn = await pool.getConnection();
 
@@ -71,7 +72,7 @@ app.post('/api/addseight', async (req, res) => {
     }
 
     finally {
-        if (conn) conn.release(); //release to pool
+        if (connection) connection.release(); //release to pool
     }
     res.status(201).send("Created")
 })
@@ -81,10 +82,8 @@ app.post('/api/addseight', async (req, res) => {
 //User: Login (with compare)
 app.post('/api/login', async (req, res) => {
     let { username, password } = req.body
-    let conn;
     try {
-        conn = await pool.getConnection();
-        const db_getdata = await conn.query("SELECT username , password FROM User where username = (?)", [username]);
+        const db_getdata = await connection.query("SELECT username , password FROM User where username = (?)", [username]);
         if (db_getdata){
             const check = bcrypt.compare(password, db_getdata.password);
             if (!check) {
@@ -95,7 +94,7 @@ app.post('/api/login', async (req, res) => {
         res.status(500).send("server error ", error)
         return;
     } finally {
-        if (conn) conn.release(); //release to pool
+        if (connection) connection.release(); //release to pool
     }
     res.status(201).send("Created")
 })
@@ -103,16 +102,15 @@ app.post('/api/login', async (req, res) => {
 //Seight: GET
 app.post('/api/getsight/:id', async (req, res) => {
     let { id } = req.params
-    let conn;
+    
     try {
-        conn = await pool.getConnection();
-        const db_getdata = await conn.query("SELECT * FROM User where id = (?)", [id]);
+        const db_getdata = await connection.query("SELECT * FROM User where id = (?)", [id]);
         res.status(200).send(db_getdata)
     } catch (error) {
         res.status(500).send("server error ", error)
         return;
     } finally {
-        if (conn) conn.release(); //release to pool
+        if (connection) connection.release(); //release to pool
     }
     
 })
@@ -120,19 +118,18 @@ app.post('/api/getsight/:id', async (req, res) => {
 //Interaction: GET total
 app.post('/api/allinteraction/:id',async (req, res) => {
     let {id} = req.params
-    let conn;
+    
     try {
-        conn = await pool.getConnection();
-        const db_getdata = await conn.query("SELECT * FROM User where id = (?) and type = true", [id]);
+        const db_getdata = await connection.query("SELECT * FROM User where id = (?) and type = true", [id]);
         anzahl_likes = db_getdata.rowCount
-        const db_getdata_negative = await conn.query("SELECT * FROM User where id = (?) and type = false", [id]);
+        const db_getdata_negative = await connection.query("SELECT * FROM User where id = (?) and type = false", [id]);
         anzahl_dislikes = db_getdata_negative.rowCount
         res.status(200).send(anzahl_likes , anzahl_dislikes)
     } catch (error) {
         res.status(500).send("server error ", error)
         return;
     } finally {
-        if (conn) conn.release(); //release to pool
+        if (connection) connection.release(); //release to pool
     }
 })
 
@@ -140,16 +137,15 @@ app.post('/api/allinteraction/:id',async (req, res) => {
 app.post('/api/addfeedback/:seightid',async (req, res) => {
     let {seightid} = req.params
     let {user,feedback} = req.body
-    let conn;
+    
     try {
-        conn = await pool.getConnection();
-        const res = await conn.query("INSERT INTO Feedback value (?,?,?)", [seightid,user,feedback]);
+        const res = await connection.query("INSERT INTO Feedback value (?,?,?)", [seightid,user,feedback]);
         res.status(200).send("Feedback added")
     } catch (error) {
         res.status(500).send("server error ", error)
         return;
     } finally {
-        if (conn) conn.release(); //release to pool
+        if (connection) connection.release(); //release to pool
     }
 })
 
