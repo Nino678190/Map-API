@@ -1,4 +1,5 @@
-async function addcontent() {
+async function addcontent(event) {
+    event.preventDefault();
     if (document.getElementById("Straße").value == "" || document.getElementById("Hausnummer").value == "" || document.getElementById("PLZ").value == "" || document.getElementById("Ort").value == "" || document.getElementById("Land").value == "") {
         alert("Bitte füllen Sie alle Felder aus.");
         return;
