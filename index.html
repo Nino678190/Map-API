@@ -118,13 +118,15 @@
         test_draggable_marker = createDraggableMarker(map, 51.0508900, 13.7383200, function(lat, lng) {
             console.log('Neuer Marker-Standort:', lat, lng);
         });
+
+
         function getDataDresden(){
             // const latitude = 51.0508900;
             // const longitude = 13.7383200;
             const latitude = 36.000;
             const longitude = 120.000;
         }
-        
+
         function getdata(latitude, longitude){
             const url = 'http://localhost:14000/api/location/' + latitude + '/' + longitude;
             fetch(url)
@@ -158,8 +160,32 @@
             getdata(latitude, longitude);
         }
 
+        async function getCoordinates(address) {
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    if (data.length > 0) {
+                        l = data[0].lon;
+                        b = data[0].lat;
+                        return { l, b };
+                    } else {
+                        console.error('Keine Koordinaten gefunden');
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Abrufen der Daten:', error);
+                }
+            }
+
         function getDataSearch(){
             const search = document.getElementById('suchleiste').value;
+            const {latitude, longitude} = getCoordinates(search);
+            if (latitude !== null && longitude !== null) {
+                getdata(latitude, longitude);
+            } else {
+                console.error('Koordinaten konnten nicht abgerufen werden');
+            }
             
         }
         </script>
