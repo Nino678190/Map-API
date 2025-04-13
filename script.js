@@ -57,11 +57,11 @@ function initMap() {
     }).addTo(map);
 
     // Marker hinzufügen
-    add_marker(51.0508900, 13.7383200, 'Dresden');
+    add_marker(51.0508900, 13.7383200, 'Dresden', 'Die Stadt');
 }
 
-function add_marker(x, y, text) {
-    L.marker([x, y]).addTo(map).bindPopup('<b>' + text + '</b>');
+function add_marker(x, y, text, beschreibung) {
+    L.marker([x, y]).addTo(map).bindPopup('<b>' + text + '</b> <br>' + beschreibung);
 }
 
 function createDraggableMarker(map, startLat, startLng, callback) {
@@ -79,7 +79,7 @@ function createDraggableMarker(map, startLat, startLng, callback) {
     });
 }
 
-let test_marker = add_marker(51.0508900, 13.7383200, 'Test Marker')
+let test_marker = add_marker(51.0508900, 13.7383200, 'Test Marker', 'Die Stadt')
 let test_draggable_marker = createDraggableMarker(map, 51.0508900, 13.7383200, function (lat, lng) {
     console.log('Neuer Marker-Standort:', lat, lng);
 });
@@ -116,7 +116,7 @@ function getdata(latitude, longitude) {
                 const p = document.createElement('p');
                 p.textContent = item.name;
                 detailsDiv.appendChild(p);
-                add_marker(item.Breitengrad, item.Längengrad, item.Name);
+                add_marker(item.Breitengrad, item.Längengrad, item.Name, item.Beschreibung);
             });
         })
         .catch(error => {
