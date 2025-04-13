@@ -81,13 +81,13 @@ app.post('/api/addinteraction', async (req, res) => {
 //ort : ADD
 //* Funktioniert
 app.post('/api/addort', async (req, res) => {
-    let { name, Breitengrad, Längengrad, Typ, Preise, Öffnungszeiten, Beschreibung } = req.body;
+    let { Name, Breitengrad, Längengrad, Typ, Preise, Öffnungszeiten, Beschreibung } = req.body;
     let connection;
 
     try {
         connection = await pool.getConnection();
-        await connection.query("INSERT INTO Ort (name, Breitengrad, Längengrad, Typ, Preise, Öffnungszeiten, Beschreibung) VALUES (?,?,?,?,?,?,?)",
-            [name, Breitengrad, Längengrad, Typ, Preise, Öffnungszeiten, Beschreibung]);
+        await connection.query("INSERT INTO Ort (Name, Breitengrad, Längengrad, Typ, Preise, Öffnungszeiten, Beschreibung) VALUES (?,?,?,?,?,?,?)",
+            [Name, Breitengrad, Längengrad, Typ, Preise, Öffnungszeiten, Beschreibung]);
         res.status(201).send("Created");
     } catch (error) {
         res.status(500).send(`Server error: ${error.message}`);
