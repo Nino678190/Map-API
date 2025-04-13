@@ -6,6 +6,11 @@ body {
     flex-direction: column;
 }
 
+::selection {
+    background: rgb(240, 135, 15);
+    color: white;
+}
+
 body>div{
 flex: 1;
 }
@@ -34,6 +39,8 @@ p {
 
 .seite{
     width: 15%;
+    display: flex;
+    flex-direction: column;
 }
 
 #suchleiste{
