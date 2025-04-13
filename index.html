@@ -113,7 +113,7 @@
                     callback(position.lat, position.lng);
                 });
             }
-            
+
         test_marker = add_marker(51.0508900,13.7383200,'')
         test_draggable_marker = createDraggableMarker(map, 51.0508900, 13.7383200, function(lat, lng) {
             console.log('Neuer Marker-Standort:', lat, lng);
@@ -123,6 +123,8 @@
             // const longitude = 13.7383200;
             const latitude = 36.000;
             const longitude = 120.000;
+
+        function getdata(latitude, longitude){
             const url = 'http://localhost:14000/api/location/' + latitude + '/' + longitude;
             fetch(url)
                 .then(response => {
@@ -145,6 +147,19 @@
                 .catch(error => {
                     console.error('Error fetching data:', error);
                 });
+        }
+
+        function getDataDresden(){
+            // const latitude = 51.0508900;
+            // const longitude = 13.7383200;
+            const latitude = 24.000;
+            const longitude = 16.16000;
+            getdata(latitude, longitude);
+        }
+
+        function getDataSearch(){
+            const search = document.getElementById('suchleiste').value;
+            
         }
         </script>
     </body>
