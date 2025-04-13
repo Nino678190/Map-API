@@ -137,6 +137,12 @@
                         return response.json();
                     })
                     .then(data => {
+                        if (data.length === 0) {
+                            console.log('No data found');
+                            const detailsDiv = document.getElementById('details');
+                            detailsDiv.innerHTML = '<p>No data found</p>'; // Clear previous content
+                            return;
+                        }
                         console.log(data);
                         const detailsDiv = document.getElementById('details');
                         detailsDiv.innerHTML = ''; // Clear previous content
