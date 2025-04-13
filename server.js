@@ -2,7 +2,17 @@ const express = require("express");
 const mysql = require('mysql2/promise'); // mysql2/promise für Promise-Support
 const cors = require('cors');
 const bcrypt = require('bcrypt'); // Korrektur: require statt Zuweisung
-const sleep = require('atomic-sleep')
+const sleep = require('atomic-sleep');
+require('dotenv').config();
+
+const ratelimit = require('express-rate-limit');
+const limiter = ratelimit({
+    windowMs: 15 * 60 * 1000, // 15 Minuten
+    max: 100, // Limit von 100 Anfragen pro IP
+    message: "Zu viele Anfragen von dieser IP, bitte später erneut versuchen"
+});
+
+app.use(limiter);
 
 console.time('sleep')
 setTimeout(() => { console.timeEnd('sleep') }, 100)
