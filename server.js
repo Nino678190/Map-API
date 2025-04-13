@@ -49,7 +49,10 @@ app.post('/api/registration', async (req, res) => {
         await connection.query("INSERT INTO User (Name, Password) VALUES (?, ?)", [username, hashedPassword]);
         res.status(201).send("Created");
     } catch (error) {
-        res.status(500).send(`Server error: ${error.message}`);
+        if (error.contains("ER_DUP_ENTRY") || error.code === "ER_DUP_ENTRY") {
+            return res.status(409).send("Username already exists");
+        }
+        return res.status(500).send(`Server error: ${error.message}`);
     } finally {
         if (connection) connection.release(); // Release to pool
     }
@@ -216,14 +219,68 @@ app.get('/api/user/interaction/:userid', async (req, res) => {
     try {
         connection = await pool.getConnection();
         const [data] = await connection.query("SELECT * FROM Interaction WHERE UserID = ?", [userid]);
-        if (data.length === 0) {
-            return res.status(404).send("No interactions found for this user");
-        }
-        const [ratings] = await connection.query("SELECT * FROM Bewertungen WHERE UserID = ?", [userid]);
-        if (ratings.length === 0) {
-            return res.status(404).send("No ratings found for this user");
-        }
         res.status(200).json(data);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Server error");
+    } finally {
+        if (connection) connection.release();
+    }
+});
+
+app.get('/api/ratings/:userid', async (req, res) => {
+    let { userid } = req.params;
+    let connection;
+
+    try {
+        connection = await pool.getConnection();
+        const [data] = await connection.query("SELECT * FROM Bewertungen WHERE UserID = ?", [userid]);
+        res.status(200).json(data);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Server error");
+    } finally {
+        if (connection) connection.release();
+    }
+});
+
+app.put('/api/user/name', async (req, res) => {
+    let { oldname, newname } = req.body;
+    let connection;
+
+    try {
+        connection = await pool.getConnection();
+        await connection.query("UPDATE User SET Name = ? WHERE Name = ?", [newname, oldname]);
+        res.status(200).send("Name updated");
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Server error");
+    } finally {
+        if (connection) connection.release();
+    }
+});
+
+app.put('/api/user/password', async (req, res) => {
+    let { username, oldpassword, newpassword } = req.body;
+    let connection;
+
+    try {
+        connection = await pool.getConnection();
+        const [users] = await connection.query("SELECT Name, password FROM User WHERE Name = ?", [username]);
+
+        if (users.length > 0) {
+            const user = users[0];
+            const check = await bcrypt.compare(oldpassword, user.password);
+
+            if (!check) {
+                return res.status(404).send("Nutzer nicht gefunden");
+            }
+            const hashedPassword = await hash(newpassword);
+            await connection.query("UPDATE User SET Password = ? WHERE Name = ?", [hashedPassword, username]);
+            res.status(200).send("Password updated");
+        } else {
+            res.status(404).send("Nutzer nicht gefunden");
+        }
     } catch (error) {
         console.log(error);
         return res.status(500).send("Server error");
