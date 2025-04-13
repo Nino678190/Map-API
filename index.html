@@ -42,11 +42,14 @@
             width: 15%;
         }
         #suchleiste{
-            width: 80%;
-            height: 60%;
+            width: 75%;
+            font-size: larger;
         }
         .travelpaca{
-            display: flex;flex-direction:row;
+            display: flex;
+            flex-direction:row;
+            align-items: center;
+            gap:20px
         }
         input{
             height: 2.5rem;
@@ -68,25 +71,25 @@
 <body>
     <div>
         <div class="travelpaca">
-            <h1>Über Travelpaca</h1> <input type="search" id="suchleiste">
+            <h2>Travelpaca</h2> <input type="search" id="suchleiste">
         </div>
 
         <p>Travelpaca ist ein kostenloser Webseite, wo man  tolle Erfahrungen sammeln kann! Finde tolle Restaurants, Kafés und Sehenswürdigkeiten, gucke dir andere Feedbacks an,und gib selber zu deiner Liblingsrestaurant Feedback! alles auf Travelpaca. Viel Spaß! </p>
     </div>
     <div class="menü">
         <div class="seite">
-            <div id="details">
+            <!-- <div id="details">
                 <h2>
                     hhhhhhhhh
                 </h2>
-            </div>
+            </div> -->
             <h2>menü</h2>
-            <h3>homepage~</h3>
+            <h3>homepage</h3>
             <button id="button2">my account</button> 
             <button id="button3">login/logout</button>
         </div>
         <div id="map"></div>
-        <div class="seite"></div>
+        <div class="seite" id="details"></div>
     </div>
         <script>
             var map = L.map('map').setView([51.0508900,13.7383200 ], 13);
@@ -114,54 +117,96 @@
                 });
             }
 
-        test_marker = add_marker(51.0508900,13.7383200,'')
-        test_draggable_marker = createDraggableMarker(map, 51.0508900, 13.7383200, function(lat, lng) {
-            console.log('Neuer Marker-Standort:', lat, lng);
-        });
-        function getDataDresden(){
-            // const latitude = 51.0508900;
-            // const longitude = 13.7383200;
-            const latitude = 36.000;
-            const longitude = 120.000;
-        }
-        
-        function getdata(latitude, longitude){
-            const url = 'http://localhost:14000/api/location/' + latitude + '/' + longitude;
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                    const detailsDiv = document.getElementById('details');
-                    detailsDiv.innerHTML = ''; // Clear previous content
-                    data.forEach(item => {
-                        const p = document.createElement('p');
-                        p.textContent = item.name;
-                        detailsDiv.appendChild(p);
-                        add_marker(item.Breitengrad, item.Längengrad, item.Name);
+            test_marker = add_marker(51.0508900,13.7383200,'Test Marker')
+            test_draggable_marker = createDraggableMarker(map, 51.0508900, 13.7383200, function(lat, lng) {
+                console.log('Neuer Marker-Standort:', lat, lng);
+            });
+
+
+            function getDataDresden(){
+                // const latitude = 51.0508900;
+                // const longitude = 13.7383200;
+                const latitude = 36.000;
+                const longitude = 120.000;
+            }
+
+            function getdata(latitude, longitude){
+                const url = 'http://localhost:14000/api/location/' + latitude + '/' + longitude;
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.length === 0) {
+                            console.log('No data found');
+                            const detailsDiv = document.getElementById('details');
+                            detailsDiv.innerHTML = '<p>No data found</p>'; // Clear previous content
+                            return;
+                        }
+                        console.log(data);
+                        const detailsDiv = document.getElementById('details');
+                        detailsDiv.innerHTML = ''; // Clear previous content
+                        data.forEach(item => {
+                            const p = document.createElement('p');
+                            p.textContent = item.name;
+                            detailsDiv.appendChild(p);
+                            add_marker(item.Breitengrad, item.Längengrad, item.Name);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
                     });
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                });
-        }
+            }
 
-        function getDataDresden(){
-            // const latitude = 51.0508900;
-            // const longitude = 13.7383200;
-            const latitude = 24.000;
-            const longitude = 16.16000;
-            getdata(latitude, longitude);
-        }
+            function getDataDresden(){
+                // const latitude = 51.0508900;
+                // const longitude = 13.7383200;
+                const latitude = 24.000;
+                const longitude = 16.16000;
+                getdata(latitude, longitude);
+            }
 
-        function getDataSearch(){
-            const search = document.getElementById('suchleiste').value;
-            
-        }
+            async function getCoordinates(address) {
+                    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+                    try {
+                        const response = await fetch(url);
+                        const data = await response.json();
+                        if (data.length > 0) {
+                            const l = data[0].lon;
+                            const b = data[0].lat;
+                            console.log('Koordinaten:', l, b);
+                            return { latitude: b, longitude: l };
+                        } else {
+                            console.error('Keine Koordinaten gefunden');
+                            return null;
+                        }
+                    } catch (error) {
+                        console.error('Fehler beim Abrufen der Daten:', error);
+                    }
+                }
+
+            async function getDataSearch(){
+                const search = document.getElementById('suchleiste').value;
+                const {latitude, longitude} = await getCoordinates(search);
+                console.log('Koordinaten:', latitude, longitude);
+                if (latitude !== null && longitude !== null) {
+                    getdata(latitude, longitude);
+                } else {
+                    console.error('Koordinaten konnten nicht abgerufen werden');
+                }
+            }
+
+            document.getElementById('suchleiste').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    getDataSearch();
+                }
+                if (event.key === 'Escape' ) {
+                    document.getElementById('suchleiste').value = '';
+                }
+            });
         </script>
     </body>
 </html>
