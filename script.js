@@ -1,3 +1,5 @@
+let map;
+
 async function addcontent(event) {
     event.preventDefault();
     if (document.getElementById("Straße").value == "" || document.getElementById("Hausnummer").value == "" || document.getElementById("PLZ").value == "" || document.getElementById("Ort").value == "" || document.getElementById("Land").value == "") {
@@ -6,6 +8,8 @@ async function addcontent(event) {
     }
     const adresse = document.getElementById("Straße").value + " " + document.getElementById("Hausnummer").value + ", " + document.getElementById("PLZ").value + " " + document.getElementById("Ort").value + ", " + document.getElementById("Land").value;
     const {latitude, longitude} = await getCoordinates(adresse);
+    const Name = document.getElementById("Name").value || "Unbekannt";
+    console.log(Name, latitude, longitude);
     fetch('http://localhost:14000/api/addort', {
         method: 'POST',
         headers: {
@@ -43,11 +47,17 @@ async function addcontent(event) {
     });
 }
 
-var map = L.map('map').setView([51.0508900, 13.7383200], 13);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+function initMap() {
+    map = L.map('map').setView([51.0508900, 13.7383200], 13); // Dresden
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // Marker hinzufügen
+    add_marker(51.0508900, 13.7383200, 'Dresden');
+}
 
 function add_marker(x, y, text) {
     L.marker([x, y]).addTo(map).bindPopup('<b>' + text + '</b>');
@@ -68,8 +78,8 @@ function createDraggableMarker(map, startLat, startLng, callback) {
     });
 }
 
-test_marker = add_marker(51.0508900, 13.7383200, 'Test Marker')
-test_draggable_marker = createDraggableMarker(map, 51.0508900, 13.7383200, function (lat, lng) {
+let test_marker = add_marker(51.0508900, 13.7383200, 'Test Marker')
+let test_draggable_marker = createDraggableMarker(map, 51.0508900, 13.7383200, function (lat, lng) {
     console.log('Neuer Marker-Standort:', lat, lng);
 });
 
@@ -79,6 +89,7 @@ function getDataDresden() {
     // const longitude = 13.7383200;
     const latitude = 36.000;
     const longitude = 120.000;
+    getdata(latitude, longitude);
 }
 
 function getdata(latitude, longitude) {

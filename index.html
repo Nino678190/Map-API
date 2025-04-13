@@ -11,8 +11,10 @@
     crossorigin=""></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
 </head>
-<body>
+<body onload="initMap()">
     <div>
         <div class="travelpaca">
             <h2>Travelpaca</h2> <input type="search" id="suchleiste">
@@ -31,6 +33,7 @@
             <h3>homepage</h3>
             <button id="button2">my account</button> 
             <button id="button3">login/logout</button>
+            <a href="form.html"><button id="button4">add place</button></a>
         </div>
         <div id="map"></div>
         <div class="seite" id="details"></div>
