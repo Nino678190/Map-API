@@ -114,88 +114,88 @@
                 });
             }
 
-        test_marker = add_marker(51.0508900,13.7383200,'')
-        test_draggable_marker = createDraggableMarker(map, 51.0508900, 13.7383200, function(lat, lng) {
-            console.log('Neuer Marker-Standort:', lat, lng);
-        });
+            test_marker = add_marker(51.0508900,13.7383200,'Test Marker')
+            test_draggable_marker = createDraggableMarker(map, 51.0508900, 13.7383200, function(lat, lng) {
+                console.log('Neuer Marker-Standort:', lat, lng);
+            });
 
 
-        function getDataDresden(){
-            // const latitude = 51.0508900;
-            // const longitude = 13.7383200;
-            const latitude = 36.000;
-            const longitude = 120.000;
-        }
+            function getDataDresden(){
+                // const latitude = 51.0508900;
+                // const longitude = 13.7383200;
+                const latitude = 36.000;
+                const longitude = 120.000;
+            }
 
-        function getdata(latitude, longitude){
-            const url = 'http://localhost:14000/api/location/' + latitude + '/' + longitude;
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                    const detailsDiv = document.getElementById('details');
-                    detailsDiv.innerHTML = ''; // Clear previous content
-                    data.forEach(item => {
-                        const p = document.createElement('p');
-                        p.textContent = item.name;
-                        detailsDiv.appendChild(p);
-                        add_marker(item.Breitengrad, item.Längengrad, item.Name);
+            function getdata(latitude, longitude){
+                const url = 'http://localhost:14000/api/location/' + latitude + '/' + longitude;
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(data);
+                        const detailsDiv = document.getElementById('details');
+                        detailsDiv.innerHTML = ''; // Clear previous content
+                        data.forEach(item => {
+                            const p = document.createElement('p');
+                            p.textContent = item.name;
+                            detailsDiv.appendChild(p);
+                            add_marker(item.Breitengrad, item.Längengrad, item.Name);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
                     });
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                });
-        }
+            }
 
-        function getDataDresden(){
-            // const latitude = 51.0508900;
-            // const longitude = 13.7383200;
-            const latitude = 24.000;
-            const longitude = 16.16000;
-            getdata(latitude, longitude);
-        }
+            function getDataDresden(){
+                // const latitude = 51.0508900;
+                // const longitude = 13.7383200;
+                const latitude = 24.000;
+                const longitude = 16.16000;
+                getdata(latitude, longitude);
+            }
 
-        async function getCoordinates(address) {
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
-                    if (data.length > 0) {
-                        l = data[0].lon;
-                        b = data[0].lat;
-                        return { l, b };
-                    } else {
-                        console.error('Keine Koordinaten gefunden');
-                        return null;
+            async function getCoordinates(address) {
+                    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+                    try {
+                        const response = await fetch(url);
+                        const data = await response.json();
+                        if (data.length > 0) {
+                            l = data[0].lon;
+                            b = data[0].lat;
+                            return { l, b };
+                        } else {
+                            console.error('Keine Koordinaten gefunden');
+                            return null;
+                        }
+                    } catch (error) {
+                        console.error('Fehler beim Abrufen der Daten:', error);
                     }
-                } catch (error) {
-                    console.error('Fehler beim Abrufen der Daten:', error);
+                }
+
+            function getDataSearch(){
+                const search = document.getElementById('suchleiste').value;
+                const {latitude, longitude} = getCoordinates(search);
+                if (latitude !== null && longitude !== null) {
+                    getdata(latitude, longitude);
+                } else {
+                    console.error('Koordinaten konnten nicht abgerufen werden');
                 }
             }
 
-        function getDataSearch(){
-            const search = document.getElementById('suchleiste').value;
-            const {latitude, longitude} = getCoordinates(search);
-            if (latitude !== null && longitude !== null) {
-                getdata(latitude, longitude);
-            } else {
-                console.error('Koordinaten konnten nicht abgerufen werden');
-            }
-        }
-
-        document.getElementById('suchleiste').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                getDataSearch();
-            }
-            if (event.key === 'Escape' ) {
-                document.getElementById('suchleiste').value = '';
-            }
-        });
+            document.getElementById('suchleiste').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    getDataSearch();
+                }
+                if (event.key === 'Escape' ) {
+                    document.getElementById('suchleiste').value = '';
+                }
+            });
         </script>
     </body>
 </html>
