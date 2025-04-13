@@ -8,27 +8,17 @@
         <script src="script.js"></script>
     </head>
     <body>
+        <a href="index.html"><button id="button1">Zurück zur Karte</button></a>
         <div style="text-align:center; font-size:50px;">
         <h1>Registrieren</h1>
-        <form method="post">
         <form>
             <label for="username">Benutzername :</label><br>
             <input type="text" id="username" name="username" value=""><br>
             <label for="password">Passwort:</label><br>
             <input type="password" id="password" name="lname" value=""><br><br>
             <input type="button" onclick="register()" value="Registrieren"id="Registrieren">
+            <a href="login.html" style="font-size:30px; color:rgb(117,73,23)">Login</a>
         </form> 
-        <script>
-            // Wähle den Button mit der ID 'Submit'
-            const button = document.getElementById('Registrieren');
-
-            // Füge einen Event-Listener hinzu, der auf Klicks reagiert
-            button.addEventListener('click', function() {
-                var eingabefeld = document.getElementById('fname');
-                var wert = eingabefeld.value;
-                alert('Benutzername: ' + wert);
-            })
-        </script>
         </div>
     </body>
 </html>

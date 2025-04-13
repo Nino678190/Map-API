@@ -180,7 +180,13 @@ function register(){
             alert("Benutzer erfolgreich registriert");
             document.getElementById("username").value = "";
             document.getElementById("password").value = "";
+            window.location.href = "index.html";
         } else {
+            if (response.status === 409) {
+                console.error("Benutzername bereits vergeben");
+                alert("Benutzername bereits vergeben");
+                return;
+            }
             console.error("Fehler bei der Registrierung");
         }
     }).catch(error => {
@@ -207,8 +213,9 @@ function login(){
             alert("Benutzer erfolgreich eingeloggt");
             document.getElementById("username").value = "";
             document.getElementById("password").value = "";
+            window.location.href = "index.html";
         } else {
-            console.error("Fehler beim Einloggen");
+            console.error("Fehler beim Einloggen"); 
         }
     }).catch(error => {
         console.error("Fehler beim Einloggen:", error);
