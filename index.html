@@ -114,8 +114,10 @@
 }
         test_marker = add_marker(51.0508900,13.7383200,'')
         function getDataDresden(){
-            const latitude = 51.0508900;
-            const longitude = 13.7383200;
+            // const latitude = 51.0508900;
+            // const longitude = 13.7383200;
+            const latitude = 36.000;
+            const longitude = 120.000;
             const url = 'http://localhost:14000/api/location/' + latitude + '/' + longitude;
             fetch(url)
                 .then(response => {
@@ -132,7 +134,7 @@
                         const p = document.createElement('p');
                         p.textContent = item.name;
                         detailsDiv.appendChild(p);
-                        add_marker(item.latitude, item.longitude, item.name);
+                        add_marker(item.Breitengrad, item.Längengrad, item.Name);
                     });
                 })
                 .catch(error => {
