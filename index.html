@@ -113,6 +113,9 @@
                 });
 }
         test_marker = add_marker(51.0508900,13.7383200,'')
+        test_draggable_marker = createDraggableMarker(map, 51.0508900, 13.7383200, function(lat, lng) {
+            console.log('Neuer Marker-Standort:', lat, lng);
+        });
         function getDataDresden(){
             const latitude = 51.0508900;
             const longitude = 13.7383200;
