@@ -161,11 +161,3 @@ async function getDataSearch() {
     }
 }
 
-document.getElementById('suchleiste').addEventListener('keypress', function (event) {
-    if (event.key === 'Enter') {
-        getDataSearch();
-    }
-    if (event.key === 'Escape') {
-        document.getElementById('suchleiste').value = '';
-    }
-});
