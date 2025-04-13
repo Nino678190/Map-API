@@ -38,6 +38,7 @@ async function addcontent(event) {
             document.getElementById("Preise").value = "";
             document.getElementById("Öffnungszeiten").value = "";
             document.getElementById("Beschreibung").value = "";
+            window.location.href = "index.html";
         } else {
             console.error("Fehler beim Senden der Daten");
         }
@@ -257,3 +258,4 @@ function getUserData(){
         console.error('Error fetching data:', error);
     })
 }
+
