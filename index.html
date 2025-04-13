@@ -1,99 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>travelpaca.de</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-crossorigin=""/>
-<!-- Make sure you put this AFTER Leaflet's CSS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-crossorigin=""></script>
-<style>
-    body {
-        font-family: verdana;
-        font-size: 28px;
-  background-color: rgb(230, 213, 140);
-  display:flex;
- flex-direction: column;
-}
-body>div{
-   flex: 1;
-}
-h1,h2,button {
-  color: rgb(117, 73, 23);
-  text-align: left;
-}
-p {
-  color: rgb(119, 76, 26);
-  text-align: left;
-}
-#map { 
-    border: 4px solid rgb(116, 83, 18);
-    height: 550px;
-width: 2000px;
-}
-.menü{
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-.seite{
-    width: 15%;
-}
-#suchleiste{
-    width: 80%;height: 60%%;
-}
-.travelpaca{
-    display: flex;flex-direction:row;
-}
-input{
-    height: 2.5rem;
-}
-#button2{
-    width: 60%; height: 10%;
-}
-#button3{
-    width: 60%;height: 10%;
-}
-h3{
-    color: rgb(240, 135, 15);
-  text-align: left;
-  }
-</style>
-
+    <title>travelpaca.de</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+    <style>
+        body {
+            font-family: verdana;
+            font-size: 28px;
+            background-color: rgb(230, 213, 140);
+            display:flex;
+            flex-direction: column;
+        }
+        body>div{
+        flex: 1;
+        }
+        h1,h2,button {
+            color: rgb(117, 73, 23);
+            text-align: left;
+        }
+        p {
+            color: rgb(119, 76, 26);
+            text-align: left;
+        }
+        #map { 
+            border: 4px solid rgb(116, 83, 18);
+            height: 550px;
+            width: 2000px;
+        }
+        .menü{
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+        }
+        .seite{
+            width: 15%;
+        }
+        #suchleiste{
+            width: 80%;
+            height: 60%;
+        }
+        .travelpaca{
+            display: flex;flex-direction:row;
+        }
+        input{
+            height: 2.5rem;
+        }
+        #button2{
+            width: 60%; height: 10%;
+        }
+        #button3{
+            width: 60%;height: 10%;
+        }
+        h3{
+            color: rgb(240, 135, 15);
+            text-align: left;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 </head>
 <body>
-<div>
-<div class="travelpaca"><h1>Über Travelpaca</h1> <input type="search" id="suchleiste"></div>
+    <div>
+        <div class="travelpaca">
+            <h1>Über Travelpaca</h1> <input type="search" id="suchleiste">
+        </div>
 
-<p>Travelpaca ist ein kostenloser Webseite, wo man  tolle Erfahrungen sammeln kann! Finde tolle Restaurants, Kafés und Sehenswürdigkeiten, gucke dir andere Feedbacks an,und gib selber zu deiner Liblingsrestaurant Feedback! alles auf Travelpaca. Viel Spaß! </p>
-</div><div class="menü">
-<div class="seite">
-<div id="details">
-    <h2>
-        hhhhhhhhh
-    </h2>
-</div>
-<h2>menü</h2>
-<h3>homepage~</h3>
-   <button id="button2">my account</button> 
-   <button id="button3">login/logout</button>
+        <p>Travelpaca ist ein kostenloser Webseite, wo man  tolle Erfahrungen sammeln kann! Finde tolle Restaurants, Kafés und Sehenswürdigkeiten, gucke dir andere Feedbacks an,und gib selber zu deiner Liblingsrestaurant Feedback! alles auf Travelpaca. Viel Spaß! </p>
     </div>
-    <div id="map"></div>
-    <div class="seite"></div></div>
-    <script>
-        var map = L.map('map').setView([51.0508900,13.7383200 ], 13);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
-function add_marker(x,y,text){
-    L.marker([x,y]).addTo(map).bindPopup('<b>'+text+'</b>');}
-test_marker = add_marker(51.0508900,13.7383200,'')
-
-
-    </script>
-   
-</body>
+    <div class="menü">
+        <div class="seite">
+            <div id="details">
+                <h2>
+                    hhhhhhhhh
+                </h2>
+            </div>
+            <h2>menü</h2>
+            <h3>homepage~</h3>
+            <button id="button2">my account</button> 
+            <button id="button3">login/logout</button>
+        </div>
+        <div id="map"></div>
+        <div class="seite"></div>
+    </div>
+        <script>
+            var map = L.map('map').setView([51.0508900,13.7383200 ], 13);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            function add_marker(x,y,text){
+                L.marker([x,y]).addTo(map).bindPopup('<b>'+text+'</b>');
+            }
+        test_marker = add_marker(51.0508900,13.7383200,'')
+        </script>
+    </body>
 </html>
