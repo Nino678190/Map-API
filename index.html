@@ -97,7 +97,23 @@
             function add_marker(x,y,text){
                 L.marker([x,y]).addTo(map).bindPopup('<b>'+text+'</b>');
             }
+            function createDraggableMarker(map, startLat, startLng, callback) {
+    // Erstelle einen Marker mit den angegebenen Startkoordinaten und setze ihn auf die Karte
+                var marker = L.marker([startLat, startLng], {
+                    draggable: true  // Marker ist verschiebbar
+                }).addTo(map);
+
+                // Event-Listener für das 'dragend' Event hinzufügen
+                marker.on('dragend', function(event) {
+                    // Hole die neuen Koordinaten nach dem Verschieben des Markers
+                    var position = event.target.getLatLng();
+                    
+                    // Führe die Callback-Funktion aus, um die neuen Koordinaten zurückzugeben
+                    callback(position.lat, position.lng);
+                });
+}
         test_marker = add_marker(51.0508900,13.7383200,'')
+        test
         </script>
     </body>
 </html>
