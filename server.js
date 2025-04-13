@@ -17,7 +17,7 @@ const pool = mysql.createPool({
 });
 
 const app = express();
-
+app.use(cors());
 app.use(express.json())
 const saltRounds = 10
 function hash(password) {
@@ -208,6 +208,29 @@ app.get('/api/location/:latitude/:longitude', async (req, res) => {
         if (connection) connection.release();
     }
 })
+
+app.get('/api/user/interaction/:userid', async (req, res) => {
+    let { userid } = req.params;
+    let connection;
+
+    try {
+        connection = await pool.getConnection();
+        const [data] = await connection.query("SELECT * FROM Interaction WHERE UserID = ?", [userid]);
+        if (data.length === 0) {
+            return res.status(404).send("No interactions found for this user");
+        }
+        const [ratings] = await connection.query("SELECT * FROM Bewertungen WHERE UserID = ?", [userid]);
+        if (ratings.length === 0) {
+            return res.status(404).send("No ratings found for this user");
+        }
+        res.status(200).json(data);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Server error");
+    } finally {
+        if (connection) connection.release();
+    }
+});
 
 app.listen(3000, () => {
     console.log("Server opened on port 3000");
