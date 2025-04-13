@@ -161,3 +161,56 @@ async function getDataSearch() {
     }
 }
 
+function register(){
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    
+    fetch('http://localhost:14000/api/registration', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "username": username,
+            "password": password
+        })
+    }).then(response => {
+        if (response.ok) {
+            console.log("Benutzer erfolgreich registriert");
+            alert("Benutzer erfolgreich registriert");
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+        } else {
+            console.error("Fehler bei der Registrierung");
+        }
+    }).catch(error => {
+        console.error("Fehler bei der Registrierung:", error);
+    });
+}
+
+function login(){
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    
+    fetch('http://localhost:14000/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "username": username,
+            "password": password
+        })
+    }).then(response => {
+        if (response.ok) {
+            console.log("Benutzer erfolgreich eingeloggt");
+            alert("Benutzer erfolgreich eingeloggt");
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+        } else {
+            console.error("Fehler beim Einloggen");
+        }
+    }).catch(error => {
+        console.error("Fehler beim Einloggen:", error);
+    });
+}

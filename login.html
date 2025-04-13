@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
+    </head>
+    <body>
+        <div style="text-align:center; font-size:50px;">
+            <h1>Login</h1>
+        <form method="post"><br>
+            <label for="username">Benutzername :</label><br>
+            <input type="text" id="username" name="username" value=""><br>
+            <label for="lname">Passwort:</label><br>
+            <input type="password" id="lname" name="lname" value=""><br><br>
+            <input type="button" onclick="login()" value="Login" id="Login">
+        </form> 
+        <a href="Registrieren.html" style="font-size:30px; color:rgb(117,73,23)">Registrieren</a>
+
+        <script>
+            // Wähle den Button mit der ID 'Submit'
+            const button = document.getElementById('Login');
+
+            // Füge einen Event-Listener hinzu, der auf Klicks reagiert
+            button.addEventListener('click', function() {
+                var eingabefeld = document.getElementById('fname');
+                var wert = eingabefeld.value;
+                alert('Benutzername: ' + wert);
+            })
+        </script>
+        </div>    
+    </body>
+</html>
