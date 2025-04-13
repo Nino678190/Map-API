@@ -221,3 +221,39 @@ function login(){
         console.error("Fehler beim Einloggen:", error);
     });
 }
+
+function getUserData(){
+    const userid = 1;
+    fetch(`http://localhost:14000/api/user/interaction/${userid}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            console.error("Fehler beim Abrufen der Benutzerdaten");
+        }
+    }).then(data => {
+        console.log(data)
+    }).catch(error => {
+        console.error('Error fetching data:', error);
+    });
+    fetch(`http://localhost:14000/api/ratings/${userid}`, { 
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            console.error("Fehler beim Abrufen der Bewertungen");
+        }
+    }).then(data => {
+        console.log(data)
+    }).catch(error => {
+        console.error('Error fetching data:', error);
+    })
+}
